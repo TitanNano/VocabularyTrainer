@@ -1,0 +1,57 @@
+﻿<Window x:Class="VocabularyTrainer.Training"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VocabularyTrainer"
+        mc:Ignorable="d"
+        Loaded="Window_Loaded"
+        Title="Vocabulary Trainer - Training" Height="400" Width="700">
+
+    <Window.Resources>
+        <local:EmptyToVisibility x:Key="isVisible" />
+        <local:NotEmptyToVisibility x:Key="isNotEmpty" />
+        <local:UserLangToVisible x:Key="userLangToVisible" />
+        <local:TargetLangToVisible x:Key="targetLangToVisible" />
+        <local:StatusToColor x:Key="statusToColor" />
+        <local:StatusNotTestedToVisible x:Key="notTested" />
+        <local:StatusTestedToVisible x:Key="tested" />
+        <local:StatusWrongToVisible x:Key="statusWrong" />
+    </Window.Resources>
+    <Grid Margin="0">
+        <StackPanel Name="sp_select_mode" Visibility="{Binding Path=test.mode, Converter={StaticResource isVisible}}" VerticalAlignment="Center">
+            <TextBlock FontSize="27" Margin="10" HorizontalAlignment="Center">Which language should be tested?</TextBlock>
+            <DockPanel Height="30" Margin="100, 0">
+                <Button Name="btn_targetLang" Width="200" Click="btn_targetLang_Click" Content="{Binding targetLang}" />
+                <Button Name="btn_userLang" Width="200" Click="btn_userLang_Click" HorizontalAlignment="Right" Content="{Binding userLang}" />
+            </DockPanel>
+        </StackPanel>
+
+        <StackPanel Visibility="{Binding mode, Converter={StaticResource isNotEmpty}}" VerticalAlignment="Center">
+            <TextBlock Text="{Binding currentItem.title}" FontSize="50" HorizontalAlignment="Center" Margin="0,0,0,5" TextWrapping="Wrap"/>
+            <TextBlock HorizontalAlignment="Center" Text="{Binding currentItem.item.pronounciation}" Visibility="{Binding mode, Converter={StaticResource userLangToVisible}}"/>
+
+            <TextBox Text="{Binding currentItem.answer}"  Width="400" Height="30" FontSize="20" Margin="0,10,0,0" Foreground="{Binding currentItem.status, Converter={StaticResource statusToColor}}" />
+            <Button Width="90" Height="30" Margin="0,20,0,0" Click="Button_Click" Visibility="{Binding currentItem.status, Converter={StaticResource notTested}}">Check</Button>
+            <StackPanel Margin="0,20,0,0" Visibility="{Binding currentItem.status, Converter={StaticResource tested}}" HorizontalAlignment="Center">
+                <StackPanel Orientation="Vertical" Margin="0,0,0,20" Visibility="{Binding currentItem.status, Converter={StaticResource statusWrong}}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Correct Answer: " />
+                        <TextBlock Text="{Binding currentItem.solution}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"  Visibility="{Binding mode, Converter={StaticResource targetLangToVisible}}">
+                        <TextBlock Text="Pronounciation: " />
+                        <TextBlock Text="{Binding currentItem.item.pronounciation}" />
+                    </StackPanel>
+                </StackPanel>
+                <Button Margin="0,0,0,0" Height="30" Width="100" HorizontalAlignment="Center" Click="Button_Click_1" Content="Continue"/>
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Visibility="{Binding mode, Converter={StaticResource isNotEmpty}}" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,20,20">
+            <TextBlock FontSize="20" Text="{Binding currentIndex}"/>
+            <TextBlock FontSize="20" Text="/" />
+            <TextBlock FontSize="20" Text="{Binding maxIndex}" />
+        </StackPanel>
+    </Grid>
+</Window>
