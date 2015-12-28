@@ -6,7 +6,7 @@ var _App2 = _interopRequireDefault(_App);
 
 var _DataBinding = require('af/modules/DataBinding.js');
 
-var _Make = require('af/util/Make.js');
+var _make = require('af/util/make.js');
 
 var _Profile = require('./Profile.js');
 
@@ -86,7 +86,7 @@ _App2.default.on('ui-page:word-manager', function () {
         if (managerScope.profile && managerScope.selection < managerScope.profile.wordList.length) {
             editorScope.item = managerScope.profile.wordList[managerScope.selection];
         } else if (managerScope.selection > 0 || editorScope.profile && editorScope.profile.wordList.length === 0) {
-            editorScope.item = (0, _Make.Make)({
+            editorScope.item = (0, _make.Make)({
                 text: '',
                 translation: '',
                 pronounciation: '',

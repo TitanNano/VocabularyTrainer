@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.recycle = exports.bindNode = exports.watcherList = undefined;
 
-var _Make = require('../../util/Make.js');
+var _make = require('../../util/make.js');
 
 var _Parser = require('./Parser.js');
 
@@ -71,8 +71,8 @@ var expressionTracking = {};
  * @return {ScopePrototype}
  */
 var bindNode = exports.bindNode = function bindNode(node, scope, isolated) {
-    scope = (0, _Make.hasPrototype)(scope, _ScopePrototype2.default) ? scope : (0, _Make.Make)(scope, _ScopePrototype2.default)();
-    node = (0, _Make.hasPrototype)(node, Node) ? node : (0, _Util.selectElement)(node);
+    scope = (0, _make.hasPrototype)(scope, _ScopePrototype2.default) ? scope : (0, _make.Make)(scope, _ScopePrototype2.default)();
+    node = (0, _make.hasPrototype)(node, Node) ? node : (0, _Util.selectElement)(node);
 
     scopeList.set(scope, {
         node: node,
@@ -171,7 +171,7 @@ var bindTwoWay = function bindTwoWay(text, scope, scopeInfo, node, parentNode, i
 
     /** @type {TwoWayBinding} */
 
-    var binding = (0, _Make.Make)({
+    var binding = (0, _make.Make)({
         properties: [property],
         originalNodeValue: text,
         currentValue: value,
@@ -230,7 +230,7 @@ var compareTwoWay = function compareTwoWay(newValue, scope, binding) {
  */
 var bindSimple = function bindSimple(text, node, variables, scopeInfo, singleExpression, parentNode) {
     /** @type {Binding} */
-    var binding = (0, _Make.Make)({
+    var binding = (0, _make.Make)({
         originalNodeValue: text,
         node: node,
         parentNode: parentNode,
@@ -244,7 +244,7 @@ var bindSimple = function bindSimple(text, node, variables, scopeInfo, singleExp
 };
 
 var bindClasses = function bindClasses(text, node, scopeInfo, parentNode) {
-    var binding = (0, _Make.Make)({
+    var binding = (0, _make.Make)({
         originalNodeValue: text,
         node: node,
         classes: (0, _Parser.ObjectParser)(text),
@@ -255,7 +255,7 @@ var bindClasses = function bindClasses(text, node, scopeInfo, parentNode) {
 };
 
 var bindEnabled = function bindEnabled(text, scopeInfo, parentNode) {
-    var binding = (0, _Make.Make)({
+    var binding = (0, _make.Make)({
         originalNodeValue: text,
         parentNode: parentNode
     }, _EnabledBinding2.default)();
@@ -265,7 +265,7 @@ var bindEnabled = function bindEnabled(text, scopeInfo, parentNode) {
 
 var bindTemplateRepeat = function bindTemplateRepeat(template, scopeInfo) {
     var marker = document.createComment('repeat ' + template.id + ' with ' + template.getAttribute('repeat'));
-    var binding = (0, _Make.Make)({
+    var binding = (0, _make.Make)({
         originalNodeValue: template.getAttribute('repeat'),
         template: template,
         marker: marker

@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _Make = require('../../util/Make.js');
+var _make = require('../../util/make.js');
 
 var _Binding = require('./Binding.js');
 
@@ -14,7 +14,7 @@ var _Parser = require('./Parser.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var EnabledBinding = (0, _Make.Make)( /** @lends EnabledBinding.prototype*/{
+var EnabledBinding = (0, _make.Make)( /** @lends EnabledBinding.prototype*/{
     /**
      * @type {Node}
      */

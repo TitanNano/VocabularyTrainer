@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _Make = require('../../util/Make.js');
+var _make2 = require('../../util/make.js');
 
 var _Binding = require('./Binding.js');
 
@@ -20,7 +20,7 @@ var _Util = require('./Util.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var TemplateRepeatBinding = (0, _Make.Make)( /** @lends TemplateRepeatBinding.prototype*/{
+var TemplateRepeatBinding = (0, _make2.Make)( /** @lends TemplateRepeatBinding.prototype*/{
 
     /**
      * @type {WeakMap<Node>}
@@ -103,7 +103,7 @@ var TemplateRepeatBinding = (0, _Make.Make)( /** @lends TemplateRepeatBinding.pr
                         /**
                          * @todo update this meta info on each recycle not only when we create a new scope.
                          */
-                        var childScope = (0, _Make.Make)({
+                        var childScope = (0, _make2.Make)({
                             $first: index === 0,
                             $last: model.length - 1 === index,
                             $index: index

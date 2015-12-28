@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _Make = require('../../util/Make.js');
+var _make = require('../../util/make.js');
 
 var _Parser = require('./Parser.js');
 
@@ -16,7 +16,7 @@ var _Binding2 = _interopRequireDefault(_Binding);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var TwoWayBinding = (0, _Make.Make)( /** @lends TwoWayBinding.prototype*/{
+var TwoWayBinding = (0, _make.Make)( /** @lends TwoWayBinding.prototype*/{
     /**
      * @type {string}
      */
