@@ -8,15 +8,15 @@
     <script src="components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
     <link rel="import" href="components/paper-spinner/paper-spinner.html">
-    <link rel="import" href="components/paper-header-panel/paper-header-panel.html">
-    <link rel="import" href="components/paper-progress/paper-progress.html">
-    <link rel="import" href="components/paper-button/paper-button.html">
-    <link rel="import" href="components/paper-icon-button/paper-icon-button.html">
-    <link rel="import" href="components/paper-input/all-imports.html">
-    <link rel="import" href="components/paper-listbox/paper-listbox.html">
-    <link rel="import" href="components/paper-item/all-imports.html">
-    <link rel="import" href="components/iron-icons/iron-icons.html">
-    <link rel="import" href="components/paper-tooltip/paper-tooltip.html">
+    <link rel="import-async" href="components/paper-header-panel/paper-header-panel.html">
+    <link rel="import-async" href="components/paper-progress/paper-progress.html">
+    <link rel="import-async" href="components/paper-button/paper-button.html">
+    <link rel="import-async" href="components/paper-icon-button/paper-icon-button.html">
+    <link rel="import-async" href="components/paper-input/all-imports.html">
+    <link rel="import-async" href="components/paper-listbox/paper-listbox.html">
+    <link rel="import-async" href="components/paper-item/all-imports.html">
+    <link rel="import-async" href="components/iron-icons/iron-icons.html">
+    <link rel="import-async" href="components/paper-tooltip/paper-tooltip.html">
 
     <link rel="stylesheet" href="stylesheets/flex-layout.css">
     <link rel="stylesheet" href="stylesheets/main.css">
@@ -145,7 +145,7 @@
         </template>
     </ui-page>
 
-    <div class="style-version">v1.0.3</div>
+    <div class="style-version">v1.0.6</div>
 
     <template id="ui-page" bind-element>
         <div bind-class="{ left: isLeft(), right: isRight(), active: active, show: active }">
@@ -153,9 +153,8 @@
         </div>
     </template>
 
-    <script src="components/systemjs/system.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        System.import('scripts/main.js');
-    </script>
+    <script src="app.js"></script>
+<!--    <script src="components/systemjs/system.js"></script> -->
+<!--    <script src="scripts/loader.js" async></script> -->
 </body>
 </html>
