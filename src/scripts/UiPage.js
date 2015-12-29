@@ -1,6 +1,6 @@
 import App from './App.js';
-import { DataBinding } from 'af/modules/DataBinding.js';
-import { Make } from 'af/util/make.js';
+import { DataBinding } from '../af/modules/DataBinding.js';
+import { Make } from '../af/util/make.js';
 
 let UiPage = Make(/** @lends UiPage.prototype*/{
 

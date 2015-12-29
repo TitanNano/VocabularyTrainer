@@ -1,5 +1,5 @@
 import App from './App.js';
-import { DataBinding } from 'af/modules/DataBinding.js';
+import { DataBinding } from '../af/modules/DataBinding.js';
 import Profile from './Profile.js';
 import UiPage from './UiPage.js';
 

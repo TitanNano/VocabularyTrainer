@@ -1,4 +1,4 @@
-import { Make } from 'af/util/make.js';
+import { Make } from '../af/util/make.js';
 import Word from './Word.js';
 
 let db = new Promise((success, failure) => {

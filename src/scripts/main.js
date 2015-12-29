@@ -1,17 +1,38 @@
 import App from './App.js';
-import { DataBinding } from 'af/modules/DataBinding.js';
+import { DataBinding } from '../af/modules/DataBinding.js';
 import UiPage from './UiPage.js';
 import './MainView.js';
 import './WordManager.js';
 import './WordTrainer.js';
 
+let once = false;
+
 let bootstrap = function(){
+    let queue = [];
+
     console.log('ready!');
 
-    UiPage.init();
+    [].slice.apply(document.querySelectorAll('link[rel="import-async"]')).forEach(element => {
+        let node = document.createElement('link');
 
-    DataBinding.bindNode('.style-spinner-start', {
-        active : false
+        node.setAttribute('rel', 'import');
+        node.setAttribute('href', element.href);
+
+        queue.push(new Promise(success => node.addEventListener('load', success)));
+
+        element.parentNode.replaceChild(node, element);
+    });
+
+    Promise.all(queue).then(() => {
+        console.log('all components loaded!');
+
+        UiPage.init();
+
+        setTimeout(() => {
+            DataBinding.bindNode('.style-spinner-start', {
+                active : false
+            });
+        }, 0);
     });
 };
 

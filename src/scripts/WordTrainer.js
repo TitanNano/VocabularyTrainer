@@ -1,6 +1,6 @@
 import App from './App.js';
-import { DataBinding } from 'af/modules/DataBinding.js';
-import { Make } from 'af/util/make.js';
+import { DataBinding } from '../af/modules/DataBinding.js';
+import { Make } from '../af/util/make.js';
 import Profile from './Profile.js';
 import TestUnit from './TestUnit.js';
 import UiPage from './UiPage.js';
@@ -34,9 +34,9 @@ App.on('ui-page:word-trainer', () => {
         scope.testUnitList.forEach(unit => {
             if (unit.status) {
                 unit.word.right += 1;
+                unit.word.priority += 1;
             }
 
-            unit.word.priority = unit.word.right;
             unit.word.tests += 1;
         });
 
@@ -154,6 +154,10 @@ App.on('ui-page:word-trainer', () => {
 
             check : function(){
                 this.testUnit.checkAnswer();
+
+                if (this.testUnit.status) {
+                    this.testUnit.answer = this.testUnit.translation;
+                }
             },
 
             checkOnEnter : function(e){
