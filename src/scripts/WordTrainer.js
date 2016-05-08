@@ -33,11 +33,11 @@ App.on('ui-page:word-trainer', () => {
     let finalize = function(){
         scope.testUnitList.forEach(unit => {
             if (unit.status) {
-                unit.word.right += 1;
-                unit.word.priority += 1;
+                unit.word.right = parseInt(unit.word.right) + 1;
+                unit.word.priority = parseInt(unit.word.priority) + 1;
             }
 
-            unit.word.tests += 1;
+            unit.word.tests = parseInt(unit.word.tests) + 1;
         });
 
         let rightTests = 0;
@@ -46,8 +46,8 @@ App.on('ui-page:word-trainer', () => {
         let totalWords = scope.profile.wordList.length;
 
         scope.profile.wordList.forEach(word => {
-            rightTests += word.right;
-            totalTests += word.tests;
+            rightTests += parseInt(word.right);
+            totalTests += parseInt(word.tests);
 
             if (word.tests === 0) {
                 notTested += 1;
