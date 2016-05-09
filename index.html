@@ -71,9 +71,13 @@
                     <paper-listbox bind-model="selection" bind-model-event="iron-activate:selected:detail.selected" bind-events="{iron-select:selectionChanged}">
                         <template replace repeat="item in profile.wordList" bind-polymer-parent="paper-listbox">
                             <paper-item>
-                                <paper-item-body two-line>
-                                    <div>{{item.text}}</div>
-                                    <div secondary>{{item.translation}}</div>
+                                <paper-item-body two-line layout="row" align-items="center center">
+                                    <div class="progress-bg" style="width: {{item.percent}}%"></div>
+                                    <div flex>
+                                        <div>{{item.text}}</div>
+                                        <div secondary>{{item.translation}}</div>
+                                    </div>
+                                    <div>{{item.percent}}%</div>
                                 </paper-item-body>
                                 <paper-ripple></paper-ripple>
                             </paper-item>
@@ -145,7 +149,7 @@
         </template>
     </ui-page>
 
-    <div class="style-version">v1.0.6</div>
+    <div class="style-version">v1.1.0</div>
 
     <template id="ui-page" bind-element>
         <div bind-class="{ left: isLeft(), right: isRight(), active: active, show: active }">

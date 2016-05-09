@@ -50,17 +50,17 @@
 	
 	var _App2 = _interopRequireDefault(_App);
 	
-	var _DataBinding = __webpack_require__(16);
+	var _DataBinding = __webpack_require__(20);
 	
-	var _UiPage = __webpack_require__(28);
+	var _UiPage = __webpack_require__(36);
 	
 	var _UiPage2 = _interopRequireDefault(_UiPage);
 	
-	__webpack_require__(29);
+	__webpack_require__(37);
 	
-	__webpack_require__(32);
+	__webpack_require__(40);
 	
-	__webpack_require__(33);
+	__webpack_require__(41);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -143,6 +143,12 @@
 	var _Engine = __webpack_require__(4);
 	
 	var _Engine2 = _interopRequireDefault(_Engine);
+	
+	var _make = __webpack_require__(5);
+	
+	var _Application = __webpack_require__(16);
+	
+	var _Application2 = _interopRequireDefault(_Application);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -273,6 +279,18 @@
 	 * @static
 	 */
 	var $_ = exports.$_ = _Engine2.default.getScope;
+	
+	exports.default = {
+		Util: {
+			Make: _make.Make,
+			hasPrototype: _make.hasPrototype,
+			Mixin: _make.Mixin
+		},
+	
+		Prototypes: {
+			Application: _Application2.default
+		}
+	};
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
@@ -285,7 +303,7 @@
 		value: true
 	});
 	
-	function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 	
 	var objectExtend = exports.objectExtend = function objectExtend(update) {
 		var _this = this;
@@ -420,7 +438,7 @@
 			/**
 	   * @type {module:Engine~LibraryItem}
 	   */
-			addon: (function () {
+			addon: function () {
 				var self = {};
 	
 				self.talk = function (type, message) {
@@ -454,7 +472,7 @@
 				};
 	
 				if ($$ != self) return self;else return null;
-			})(),
+			}(),
 	
 			/**
 	   * @type module:Engine~LibraryItem
@@ -509,6 +527,7 @@
 					}
 	
 					var moduleTypes = Engine.shared.moduleTypes;
+	
 	
 					Engine.ready = new Promise(function (ready) {
 						Promise.all(modules.map(function (m) {
@@ -762,6 +781,8 @@
 	        } else {
 	            prototypes[0][key] = value;
 	        }
+	
+	        return true;
 	    }
 	};
 
@@ -1426,11 +1447,271 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	
+	var _make2 = __webpack_require__(5);
+	
+	var _Thread = __webpack_require__(17);
+	
+	var _Thread2 = _interopRequireDefault(_Thread);
+	
+	var _ApplicationInternal = __webpack_require__(19);
+	
+	var _ApplicationInternal2 = _interopRequireDefault(_ApplicationInternal);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var Internal = new WeakMap();
+	
+	var Application = {
+	
+	    /**
+	     * Name of this application so other components can identify the application.
+	     *
+	     * @type {string}
+	     */
+	    name: '',
+	
+	    /**
+	     * Some components may need to know the version of this applicaion.
+	     *
+	     * @type {string}
+	     */
+	    version: '0.0.0',
+	
+	    /**
+	     * @type {string}
+	     */
+	    author: '',
+	
+	    /**
+	     * @constructs
+	     */
+	    _make: function _make() {
+	        Internal.set(this, (0, _make2.Make)(_ApplicationInternal2.default)());
+	    },
+	
+	    /**
+	     * Initializes this application, default interface for components and modules.
+	     */
+	    init: function init() {
+	        console.log('Initialzing Application "' + this.name + '"!');
+	    },
+	
+	    /**
+	     * Registers a new event listener for the given event type.
+	     *
+	     * @param {string} type
+	     * @param {function} listener
+	     */
+	    on: function on(type, listener) {
+	        var scope = Internal.get(this);
+	
+	        if (!scope.listeners[type]) {
+	            scope.listeners[type] = [];
+	        }
+	
+	        scope.listeners[type].push(listener);
+	
+	        return this;
+	    },
+	
+	    /**
+	     * Emmits a new event on this application.
+	     *
+	     * @param {string} type
+	     * @param {Object} data
+	     */
+	    emit: function emit(type, data) {
+	        var scope = Internal.get(this);
+	
+	        if (scope.listeners[type]) {
+	            scope.listeners[type].forEach(function (f) {
+	                setTimeout(function () {
+	                    f(data);
+	                }, 0);
+	            });
+	        }
+	    },
+	
+	    /**
+	     * Creates a new thread for this applicaion.
+	     *
+	     * @param {function} f
+	     * @return {ApplicationScopeInterface}
+	     */
+	    thread: function thread(f) {
+	        var scope = Internal.get(this);
+	
+	        scope.workers.push((0, _make2.Make)(_Thread2.default)(f));
+	
+	        return this;
+	    },
+	
+	    /**
+	     * This function will try to terminate the application by emitting the termination event.
+	     *
+	     * @param {string} reason - the reason for the termination.
+	     */
+	    terminate: function terminate(reason) {
+	        this.emit('terminate', reason);
+	    }
+	
+	};
+	
+	exports.default = Application;
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _Shared = __webpack_require__(18);
+	
+	var _Shared2 = _interopRequireDefault(_Shared);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	/**
+	 * this prototype defines a new scope worker
+	 */
+	var Thread = {
+	
+	    /**
+	     * The parent application of this thread.
+	     *
+	     * @type {Application}
+	     */
+	    parent: null,
+	
+	    /**
+	     * The Worker Object for this thread.
+	     *
+	     * @type {Worker}
+	     * @private
+	     */
+	    _thread: null,
+	
+	    _promise: null,
+	
+	    then: null,
+	
+	    catch: null,
+	
+	    /**
+	     * @constructs
+	     * @param {function} f
+	     * @param {Application} parent
+	     */
+	    _make: function _make(f, parent) {
+	        var _this = this;
+	
+	        this.parent = parent;
+	        this.thread = new Worker(_Shared2.default.threadLoader);
+	        this.thread.postMessage({ name: 'init', func: f });
+	        this.progressListeners = [];
+	
+	        this._promise = new Promise(function (done) {
+	            _this._thread.addEventListener('message', function (e) {
+	                if (e.data.name == 'af-worker-done') done(e.data.data);
+	            }, false);
+	        });
+	
+	        this._thread.addEventListener('message', function (e) {
+	            if (e.data.name == 'af-worker-progress') {
+	                _this.emit('progress', e.data.data);
+	            }
+	        }, false);
+	
+	        this.then = this._promise.then.bind(this._promise);
+	        this.catch = this._promise.catch.bind(this._promise);
+	    }
+	};
+	
+	exports.default = Thread;
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = {};
+
+/***/ },
+/* 19 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var ApplicationInternal = {
+	  /**
+	   * @type {Thread}
+	   */
+	  thread: null,
+	
+	  /**
+	   * @type {Worker[]}
+	   */
+	  workers: null,
+	
+	  /**
+	   * @type {Array}
+	   */
+	  listeners: null,
+	
+	  /**
+	   * @type {Catalog}
+	   */
+	  modules: null,
+	
+	  /**
+	   * this prototype defines a new application scope
+	   *
+	   * @constructs
+	   * @param {string} name
+	   * @implements {Scope}
+	   */
+	  _make: function _make() {
+	    this.workers = [];
+	    this.listeners = [];
+	
+	    this._make = null;
+	  }
+	};
+	
+	exports.default = ApplicationInternal;
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
 	exports.config = exports.DataBinding = undefined;
 	
-	var _Template = __webpack_require__(17);
+	var _Template = __webpack_require__(21);
 	
-	var _Bind = __webpack_require__(18);
+	var _Bind = __webpack_require__(22);
+	
+	var _ViewPort = __webpack_require__(35);
+	
+	var _ViewPort2 = _interopRequireDefault(_ViewPort);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	/**
 	 * @module DataBinding
@@ -1438,7 +1719,6 @@
 	 * @author Jovan Gerodetti
 	 */
 	
-	//import CryptoJS from '../libs/CryptoJS-SHA-3.js';
 	NodeList.prototype.forEach = NamedNodeMap.prototype.forEach = Array.prototype.forEach;
 	
 	/**
@@ -1457,6 +1737,7 @@
 	    return hash.toString(CryptoJS.enc.Base64);
 	};**/
 	
+	//import CryptoJS from '../libs/CryptoJS-SHA-3.js';
 	var style = document.createElement('style');
 	
 	style.innerHTML = '\n    [bind-display="false"] {\n        display: none !important;\n    }\n\n    [bind-visible="false"] {\n        visibility: hidden;\n    }\n';
@@ -1465,7 +1746,8 @@
 	
 	var DataBinding = exports.DataBinding = {
 	    makeTemplate: _Template.makeTemplate,
-	    bindNode: _Bind.bindNode
+	    bindNode: _Bind.bindNode,
+	    ViewPort: _ViewPort2.default
 	};
 	
 	var config = exports.config = {
@@ -1474,7 +1756,7 @@
 	};
 
 /***/ },
-/* 17 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1486,21 +1768,29 @@
 	
 	var _make = __webpack_require__(5);
 	
-	var _Bind = __webpack_require__(18);
+	var _Bind = __webpack_require__(22);
 	
-	var _Util = __webpack_require__(21);
+	var _Util = __webpack_require__(25);
+	
+	var _TemplateLoader = __webpack_require__(33);
+	
+	var _ScopePrototype = __webpack_require__(29);
+	
+	var _ScopePrototype2 = _interopRequireDefault(_ScopePrototype);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var makeElementFromTemplate = function makeElementFromTemplate(template, scope, application, item) {
-	    var node = template.content.cloneNode(true);
+	    var node = document.importNode(template.content, true);
 	    var placeholder = (0, _Util.selectElement)('bind-placeholder', node);
 	
-	    item = (0, _Util.unwrapPolymerNode)(item);
+	    item = (0, _Util.polyMask)(item);
 	
 	    item.attributes.forEach(function (attr) {
 	        node.firstElementChild.setAttribute(attr.name, attr.value);
 	    });
 	
-	    if (placeholder) {
+	    if (placeholder.bare) {
 	        (function () {
 	            var node = item.firstElementChild;
 	            placeholder.parentNode.replaceChild(item.firstElementChild, placeholder.bare);
@@ -1520,6 +1810,10 @@
 	            scope[item.name.replace(/^scope\-/, '')] = item.value;
 	        }
 	    }]);
+	
+	    if (template.hasAttribute('component')) {
+	        scope.element = node.firstElementChild;
+	    }
 	
 	    scope = (0, _Bind.bindNode)(node, scope);
 	
@@ -1542,9 +1836,20 @@
 	var makeTemplate = exports.makeTemplate = function makeTemplate(template, scope, application) {
 	    var _this = this;
 	
-	    template = (0, _make.hasPrototype)(template, Node) ? template : (0, _Util.selectElement)(template);
+	    template = typeof template === 'string' ? (0, _Util.selectElement)(template) : (0, _Util.polyMask)(template);
 	
-	    if (template.hasAttribute('bind-element')) {
+	    if (template.hasAttribute('src') && !template.processed) {
+	        var source = template.getAttribute('src');
+	
+	        scope = (0, _make.Make)(scope, _ScopePrototype2.default)();
+	
+	        (0, _TemplateLoader.importTemplate)(source, template).then(function (template) {
+	            template.processed = true;
+	            makeTemplate(template, scope, application);
+	        });
+	
+	        return scope;
+	    } else if (template.hasAttribute('bind-element')) {
 	        (function () {
 	            var makeElement = makeElementFromTemplate.bind(_this, template, scope, application);
 	            var list = (0, _Util.selectAllElements)(template.id);
@@ -1565,12 +1870,15 @@
 	            });
 	        })();
 	    } else {
-	        var node = template.content.cloneNode(true);
+	        var node = document.importNode(template.content, true);
 	
 	        scope = (0, _Bind.bindNode)(node, scope);
 	
 	        if (template.hasAttribute('replace')) {
+	            console.log('replace template');
 	            template.parentNode.replaceChild(node, template.bare);
+	        } else if (template.hasAttribute('insert')) {
+	            template.parentNode.insertBefore(node, template.bare);
 	        }
 	
 	        return { node: node, scope: scope };
@@ -1578,49 +1886,53 @@
 	};
 
 /***/ },
-/* 18 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
-	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.recycle = exports.bindNode = exports.watcherList = undefined;
+	exports.destoryScope = exports.recycle = exports.bindNode = exports.watcherList = undefined;
+	
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 	
 	var _make = __webpack_require__(5);
 	
-	var _Parser = __webpack_require__(19);
+	var _Parser = __webpack_require__(23);
 	
-	var _Mapping = __webpack_require__(20);
+	var _Mapping = __webpack_require__(24);
 	
-	var _Util = __webpack_require__(21);
+	var _Util = __webpack_require__(25);
 	
-	var _Binding = __webpack_require__(22);
+	var _Binding = __webpack_require__(26);
 	
 	var _Binding2 = _interopRequireDefault(_Binding);
 	
-	var _ClassBinding = __webpack_require__(23);
+	var _ClassBinding = __webpack_require__(27);
 	
 	var _ClassBinding2 = _interopRequireDefault(_ClassBinding);
 	
-	var _TwoWayBinding = __webpack_require__(24);
+	var _TwoWayBinding = __webpack_require__(28);
 	
 	var _TwoWayBinding2 = _interopRequireDefault(_TwoWayBinding);
 	
-	var _ScopePrototype = __webpack_require__(25);
+	var _ScopePrototype = __webpack_require__(29);
 	
 	var _ScopePrototype2 = _interopRequireDefault(_ScopePrototype);
 	
-	var _EnabledBinding = __webpack_require__(26);
+	var _EnabledBinding = __webpack_require__(30);
 	
 	var _EnabledBinding2 = _interopRequireDefault(_EnabledBinding);
 	
-	var _TemplateRepeatBinding = __webpack_require__(27);
+	var _TemplateRepeatBinding = __webpack_require__(31);
 	
 	var _TemplateRepeatBinding2 = _interopRequireDefault(_TemplateRepeatBinding);
+	
+	var _AutoBinding = __webpack_require__(32);
+	
+	var _AutoBinding2 = _interopRequireDefault(_AutoBinding);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -1632,7 +1944,7 @@
 	var scopeList = new WeakMap();
 	
 	/**
-	 * @type {WeakMap[]}
+	 * @type {ScopePrototype[]}
 	 */
 	var scopeIndex = [];
 	
@@ -1649,8 +1961,9 @@
 	/**
 	 * applies the binding to the node for the given scope.
 	 *
-	 * @param {Node|string} node
-	 * @param {Object} scope
+	 * @param {Node|string} node - the node which should be bound
+	 * @param {Object} scope - the scope which should be bound to
+	 * @param {boolean} isolated - indicates if this scope should be recycled isolated
 	 * @return {ScopePrototype}
 	 */
 	var bindNode = exports.bindNode = function bindNode(node, scope, isolated) {
@@ -1689,6 +2002,7 @@
 	            enabledAttribute = node.name === _Mapping.attributeNames.get('enabled'),
 	            classes = node.name === _Mapping.attributeNames.get('classes'),
 	            modelBinding = node.name === _Mapping.attributeNames.get('model'),
+	            autoBinding = node.name === 'bind',
 	            twoWay = node.name === _Mapping.attributeNames.get('value') || modelBinding;
 	
 	        var singleBinding = visibilityBinding || transparencyBinding;
@@ -1701,9 +2015,15 @@
 	            bindEnabled(text, scopeInfo, parentNode);
 	        } else if (variables || singleBinding) {
 	            bindSimple(text, node, variables, scopeInfo, singleBinding, parentNode);
+	        } else if (autoBinding) {
+	            bindAuto(text, scopeInfo, parentNode);
 	        }
 	    } else if (node.localName === 'template') {
 	        var repeatedTemplate = node.hasAttribute('replace') && node.hasAttribute('repeat');
+	
+	        node.attributes.forEach(function (child) {
+	            return checkNode(child, scope, node);
+	        });
 	
 	        if (repeatedTemplate) {
 	            bindTemplateRepeat(node, scopeInfo);
@@ -1854,7 +2174,8 @@
 	        marker: marker
 	    }, _TemplateRepeatBinding2.default)();
 	
-	    template.parentNode.replaceChild(marker, template);
+	    console.log('replace template with marker');
+	    (0, _Util.polyMask)(template.parentNode).replaceChild(marker, template);
 	    scopeInfo.bindings.push(binding);
 	};
 	
@@ -1881,6 +2202,7 @@
 	        var name = _event$split2[0];
 	        var method = _event$split2[1];
 	
+	
 	        if (scope.$methods && scope.$methods[method.trim()]) {
 	            node.addEventListener(name.trim(), function (e) {
 	                scope.$methods[method.trim()].apply(scope, [e]);
@@ -1889,6 +2211,15 @@
 	            });
 	        }
 	    });
+	};
+	
+	var bindAuto = function bindAuto(text, scopeInfo, template) {
+	    var binding = (0, _make.Make)({
+	        scopeName: text,
+	        template: template
+	    }, _AutoBinding2.default)();
+	
+	    scopeInfo.bindings.push(binding);
 	};
 	
 	var executeWatchers = function executeWatchers(scope) {
@@ -1944,6 +2275,12 @@
 	    }
 	};
 	
+	var destoryScope = exports.destoryScope = function destoryScope(scope) {
+	    scopeList.delete(scope);
+	    scopeIndex.splice(scopeIndex.indexOf(scope), 1);
+	    watcherList.delete(scope);
+	};
+	
 	/**
 	 * Returns the value of an DOM Node
 	 *
@@ -1958,7 +2295,7 @@
 	};
 
 /***/ },
-/* 19 */
+/* 23 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2056,7 +2393,7 @@
 	};
 
 /***/ },
-/* 20 */
+/* 24 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2090,7 +2427,7 @@
 	};
 
 /***/ },
-/* 21 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2181,7 +2518,7 @@
 	};
 
 /***/ },
-/* 22 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2192,9 +2529,9 @@
 	
 	var _make2 = __webpack_require__(5);
 	
-	var _Parser = __webpack_require__(19);
+	var _Parser = __webpack_require__(23);
 	
-	var _Util = __webpack_require__(21);
+	var _Util = __webpack_require__(25);
 	
 	var Binding = {
 	
@@ -2230,7 +2567,9 @@
 	    update: function update(scope) {
 	        var text = this.originalNodeValue;
 	        var values = this.properties.map(function (key) {
-	            return { name: key, value: (0, _Parser.parseExpression)(key, scope) };
+	            var item = { name: key, value: (0, _Parser.parseExpression)(key, scope) };
+	
+	            return item;
 	        });
 	
 	        if (this.singleExpression) {
@@ -2244,7 +2583,7 @@
 	        if ((0, _make2.hasPrototype)(this.node, window.Attr)) {
 	            (0, _Util.polyMask)(this.parentNode).setAttribute(this.node.name, text);
 	        } else {
-	            this.node.textContent = text;
+	            this.node.textContent = text.replace(/ /g, ' ');;
 	        }
 	    }
 	};
@@ -2252,7 +2591,7 @@
 	exports.default = Binding;
 
 /***/ },
-/* 23 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2263,11 +2602,11 @@
 	
 	var _make = __webpack_require__(5);
 	
-	var _Binding = __webpack_require__(22);
+	var _Binding = __webpack_require__(26);
 	
 	var _Binding2 = _interopRequireDefault(_Binding);
 	
-	var _Parser = __webpack_require__(19);
+	var _Parser = __webpack_require__(23);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -2323,7 +2662,7 @@
 	exports.default = ClassBinding;
 
 /***/ },
-/* 24 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2334,11 +2673,11 @@
 	
 	var _make = __webpack_require__(5);
 	
-	var _Parser = __webpack_require__(19);
+	var _Parser = __webpack_require__(23);
 	
-	var _Mapping = __webpack_require__(20);
+	var _Mapping = __webpack_require__(24);
 	
-	var _Binding = __webpack_require__(22);
+	var _Binding = __webpack_require__(26);
 	
 	var _Binding2 = _interopRequireDefault(_Binding);
 	
@@ -2385,7 +2724,7 @@
 	exports.default = TwoWayBinding;
 
 /***/ },
-/* 25 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2394,7 +2733,7 @@
 	    value: true
 	});
 	
-	var _Bind = __webpack_require__(18);
+	var _Bind = __webpack_require__(22);
 	
 	/**
 	 * Prototype for data binding scopes.
@@ -2423,13 +2762,17 @@
 	            expression: expression,
 	            cb: cb
 	        });
+	    },
+	
+	    __destroy__: function __destroy__() {
+	        (0, _Bind.destoryScope)(this);
 	    }
 	};
 	
 	exports.default = ScopePrototype;
 
 /***/ },
-/* 26 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2440,11 +2783,11 @@
 	
 	var _make = __webpack_require__(5);
 	
-	var _Binding = __webpack_require__(22);
+	var _Binding = __webpack_require__(26);
 	
 	var _Binding2 = _interopRequireDefault(_Binding);
 	
-	var _Parser = __webpack_require__(19);
+	var _Parser = __webpack_require__(23);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -2475,28 +2818,28 @@
 	exports.default = EnabledBinding;
 
 /***/ },
-/* 27 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
-	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 	
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+	
 	var _make2 = __webpack_require__(5);
 	
-	var _Binding = __webpack_require__(22);
+	var _Binding = __webpack_require__(26);
 	
 	var _Binding2 = _interopRequireDefault(_Binding);
 	
-	var _Parser = __webpack_require__(19);
+	var _Parser = __webpack_require__(23);
 	
-	var _Bind = __webpack_require__(18);
+	var _Bind = __webpack_require__(22);
 	
-	var _Util = __webpack_require__(21);
+	var _Util = __webpack_require__(25);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -2506,6 +2849,11 @@
 	     * @type {WeakMap<Node>}
 	     */
 	    itemNodeList: null,
+	
+	    /**
+	     * @type {WeakMap<ScopePrototype>}
+	     */
+	    itemScopeList: null,
 	
 	    /**
 	     * @type {Node}
@@ -2525,12 +2873,59 @@
 	    /**
 	     * @constructs
 	     * @extends {Binding}
+	     * @return {void}
 	     */
 	    _make: function _make() {
 	        _Binding2.default._make.apply(this);
 	
 	        this.itemNodeList = new WeakMap();
+	        this.itemScopeList = new WeakMap();
 	        this.modelBackup = [];
+	    },
+	
+	    renderItem: function renderItem(model, scope, itemName, cursor, polyParent, item, index) {
+	        var node = null;
+	
+	        if (this.itemNodeList.has(item)) {
+	            node = this.itemNodeList.get(item);
+	            var childScope = this.itemScopeList.get(item);
+	
+	            childScope.$first = index === 0;
+	            childScope.$last = model.length - 1 === index;
+	            childScope.$index = index;
+	        } else {
+	            var childScope = (0, _make2.Make)({
+	                $first: index === 0,
+	                $last: model.length - 1 === index,
+	                $index: index
+	            }, scope).get();
+	
+	            childScope[itemName] = item;
+	
+	            node = document.importNode(this.template.content, true).firstElementChild;
+	            (0, _Bind.bindNode)(node, childScope, true);
+	
+	            this.itemNodeList.set(item, node);
+	            this.itemScopeList.set(item, childScope);
+	        }
+	
+	        if (cursor.value && cursor.value.parentNode) {
+	            if (node !== cursor.value) {
+	                if (polyParent) {
+	                    (0, _Util.getPolyParent)(cursor.value, polyParent).insertBefore(node, cursor.value);
+	                } else {
+	                    (0, _Util.polyMask)(cursor.value.parentNode).insertBefore(node, cursor.value);
+	                }
+	            } else {
+	                cursor.value = cursor.value.nextElementSibling;
+	            }
+	        } else {
+	            if (polyParent) {
+	                (0, _Util.getPolyParent)(this.marker.parentNode, polyParent).appendChild(node);
+	            } else {
+	                (0, _Util.polyMask)(this.marker.parentNode).appendChild(node);
+	            }
+	        }
 	    },
 	
 	    update: function update(scope) {
@@ -2553,69 +2948,29 @@
 	        }
 	
 	        if (Array.isArray(model)) {
-	            (function () {
 	
-	                _this.modelBackup.forEach(function (item) {
-	                    if (model.indexOf(item) < 0) {
-	                        if (polyParent) {
-	                            (0, _Util.getPolyParent)(_this.marker, polyParent).removeChild(_this.itemNodeList.get(item));
-	                        } else {
-	                            (0, _Util.polyMask)(_this.marker.parentNode).removeChild(_this.itemNodeList.get(item));
-	                            _this.itemNodeList.delete(item);
-	                        }
+	            this.modelBackup.forEach(function (item) {
+	                if (model.indexOf(item) < 0) {
+	                    if (polyParent) {
+	                        (0, _Util.getPolyParent)(_this.marker, polyParent).removeChild(_this.itemNodeList.get(item));
+	                    } else {
+	                        (0, _Util.polyMask)(_this.marker.parentNode).removeChild(_this.itemNodeList.get(item));
+	                        _this.itemNodeList.delete(item);
 	                    }
-	                });
-	
-	                _this.modelBackup = model.slice();
-	
-	                if (window.Polymer) {
-	                    window.Polymer.dom.flush();
 	                }
+	            });
 	
-	                var cursor = _this.marker.nextElementSibling;
+	            this.modelBackup = model.slice();
 	
-	                model.forEach(function (item, index) {
-	                    var node = null;
+	            if (window.Polymer) {
+	                window.Polymer.dom.flush();
+	            }
 	
-	                    if (_this.itemNodeList.has(item)) {
-	                        node = _this.itemNodeList.get(item);
-	                    } else {
-	                        /**
-	                         * @todo update this meta info on each recycle not only when we create a new scope.
-	                         */
-	                        var childScope = (0, _make2.Make)({
-	                            $first: index === 0,
-	                            $last: model.length - 1 === index,
-	                            $index: index
-	                        }, scope).get();
+	            var cursor = {
+	                value: this.marker.nextElementSibling
+	            };
 	
-	                        childScope[itemName] = item;
-	
-	                        node = _this.template.content.cloneNode(true).firstElementChild;
-	                        (0, _Bind.bindNode)(node, childScope, true);
-	
-	                        _this.itemNodeList.set(item, node);
-	                    }
-	
-	                    if (cursor && cursor.parentNode) {
-	                        if (node !== cursor) {
-	                            if (polyParent) {
-	                                (0, _Util.getPolyParent)(cursor.parentNode, polyParent).insertBefore(node, cursor);
-	                            } else {
-	                                (0, _Util.polyMask)(cursor.parentNode).insertBefore(node, cursor);
-	                            }
-	                        } else {
-	                            cursor = cursor.nextElementSibling;
-	                        }
-	                    } else {
-	                        if (polyParent) {
-	                            (0, _Util.getPolyParent)(_this.marker.parentNode, polyParent).appendChild(node);
-	                        } else {
-	                            (0, _Util.polyMask)(_this.marker.parentNode).appendChild(node);
-	                        }
-	                    }
-	                });
-	            })();
+	            model.forEach(this.renderItem.bind(this, model, scope, itemName, cursor, polyParent));
 	        }
 	    }
 	
@@ -2624,7 +2979,442 @@
 	exports.default = TemplateRepeatBinding;
 
 /***/ },
-/* 28 */
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _make2 = __webpack_require__(5);
+	
+	var _Binding = __webpack_require__(26);
+	
+	var _Binding2 = _interopRequireDefault(_Binding);
+	
+	var _Parser = __webpack_require__(23);
+	
+	var _Template = __webpack_require__(21);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var AutoBinding = (0, _make2.Make)( /** @lends AutoBinding.prototype*/{
+	
+	    scopeName: '',
+	
+	    /** @type {HTMLTemplateNode} */
+	    template: null,
+	
+	    _isBound: false,
+	
+	    _make: function _make() {},
+	
+	    update: function update(scope) {
+	        var _this = this;
+	
+	        if (!this._isBound) {
+	            (function () {
+	                var subScope = (0, _Parser.parseExpression)(_this.scopeName, scope);
+	
+	                setTimeout(function () {
+	                    var scopeHolder = null;
+	                    var scopeObjName = null;
+	
+	                    if (_this.scopeName.lastIndexOf('.') > 0) {
+	                        scopeHolder = _this.scopeName.split('.');
+	                        scopeObjName = scopeHolder.pop();
+	                        scopeHolder = (0, _Parser.parseExpression)(scopeHolder.join('.'), scope);
+	
+	                        scopeHolder[scopeObjName] = (0, _Template.makeTemplate)(_this.template, subScope, true);
+	                    } else {
+	                        (0, _Template.makeTemplate)(_this.template, subScope, true);
+	                    }
+	                }, 0);
+	
+	                _this._isBound = true;
+	            })();
+	        }
+	    }
+	
+	}, _Binding2.default).get();
+	
+	exports.default = AutoBinding;
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.importTemplate = undefined;
+	
+	var _NetworkRequest = __webpack_require__(34);
+	
+	var _NetworkRequest2 = _interopRequireDefault(_NetworkRequest);
+	
+	var _make2 = __webpack_require__(5);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var FakeTemplate = {
+	    _markup: '',
+	
+	    _make: function _make(markup) {
+	        this._markup = markup;
+	    },
+	
+	    get content() {
+	        var fragment = new DocumentFragment();
+	        var container = document.createElement('div');
+	
+	        container.innerHTML = this._markup;
+	
+	        [].forEach.apply(container.childNodes, [function (element) {
+	            fragment.appendChild(element);
+	        }]);
+	
+	        return fragment;
+	    }
+	};
+	
+	var importTemplate = exports.importTemplate = function importTemplate(source, template) {
+	    var request = (0, _make2.Make)(_NetworkRequest2.default)(source, {});
+	
+	    return request.send().then(function (markup) {
+	        var tplContainer = (0, _make2.Make)(FakeTemplate)(markup);
+	
+	        return (0, _make2.Mixin)(tplContainer, template);
+	    });
+	};
+
+/***/ },
+/* 34 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	
+	/**
+	 * @param {Object} object
+	 */
+	var stripHashKey = function stripHashKey(object) {
+		if (Array.isArray(object)) {
+			object = object.map(stripHashKey);
+		} else {
+			object = JSON.parse(JSON.stringify(object));
+	
+			Object.keys(object).forEach(function (key) {
+				if (key == '$$hashKey') {
+					delete object[key];
+				} else if (_typeof(object[key]) === 'object') {
+					object[key] = stripHashKey(object[key]);
+				}
+			});
+		}
+	
+		return object;
+	};
+	
+	/**
+	 * @lends NetworkRequest.prototype
+	 */
+	var NetworkRequest = {
+		/**
+	  * @private
+	  * @type {Object}
+	  */
+		_body: {},
+	
+		/**
+	  * @private
+	  * @type {Object}
+	  */
+		_headers: null,
+	
+		/**
+	  * @type {string}
+	  */
+		type: '',
+	
+		/**
+	  * @type {string}
+	  */
+		method: '',
+	
+		/**
+	  * @type {string}
+	  */
+		url: '',
+	
+		/**
+	  * @type {function[]}
+	  */
+		_listeners: null,
+	
+		/**
+	  * The constructor for the NetworkRequest. It simply sets up the properties.
+	  *
+	  * @constructs
+	  * @param {string} url
+	  * @param {Object} config
+	  * @return {NetworkRequest}
+	  */
+		_make: function _make(url, _ref) {
+			var _ref$method = _ref.method;
+			var method = _ref$method === undefined ? 'GET' : _ref$method;
+			var _ref$type = _ref.type;
+			var type = _ref$type === undefined ? 'none' : _ref$type;
+	
+			this.type = type;
+			this.method = method;
+			this._headers = {};
+			this.url = url;
+			this._listeners = [];
+		},
+	
+		/**
+	  * this method will set the given object as the request body.
+	  *
+	  * @param {Object} data
+	  * @return {NetworkRequest}
+	  */
+		body: function body(data) {
+			this._body = data;
+	
+			return this;
+		},
+	
+		/**
+	  * This method will set the request headers, in case custom headers are required.
+	  *
+	  * @param {Object} headers
+	  * @return {NetworkRequest}
+	  */
+		headers: function headers(_headers) {
+			this._headers = _headers;
+	
+			return this;
+		},
+	
+		/**
+	  * Sets a single header for this request.
+	  *
+	  * @param {string} key
+	  * @param {string} value
+	  * @return {NetworkRequest}
+	  */
+		setHeader: function setHeader(key, value) {
+			this._headers[key] = value;
+	
+			return this;
+		},
+	
+		/**
+	  * @param {function} fn
+	  */
+		onReady: function onReady(fn) {
+			this._listeners.push(fn);
+		},
+	
+		/**
+	  * This will actually create the network connection and initiate the request.
+	  *
+	  * @return {Promise}
+	  */
+		send: function send() {
+			var _this = this;
+	
+			var self = this;
+			var xhr = new XMLHttpRequest();
+	
+			if (this.method === 'GET' && this._body) {
+				this.url += '?' + Object.keys(this._body).map(function (key) {
+					return key + '=' + self._body[key];
+				}).join('&');
+			}
+	
+			xhr.open(this.method, this.url, true);
+	
+			var promise = new Promise(function (success, failure) {
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4) {
+						if (xhr.status === 200) {
+							var response = xhr.response;
+	
+							if (xhr.getResponseHeader('Content-Type').indexOf('application/json') > -1 && typeof response === 'string') {
+								response = JSON.parse(response);
+							}
+	
+							_this._listeners.forEach(function (fn) {
+								return fn(xhr);
+							});
+	
+							success(response);
+						} else {
+							failure(xhr);
+						}
+					}
+				};
+			});
+	
+			Object.keys(this._headers).forEach(function (key) {
+				xhr.setRequestHeader(key, self._headers[key]);
+			});
+	
+			if (this.type === 'json') {
+				var body = this._body;
+	
+				xhr.setRequestHeader('Content-Type', 'application/json');
+	
+				if (body) {
+					body = stripHashKey(body);
+					body = JSON.stringify(body);
+				}
+	
+				xhr.send(body);
+			} else {
+				xhr.send(this._body);
+			}
+	
+			return promise;
+		}
+	};
+	
+	exports.default = NetworkRequest;
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _DataBinding = __webpack_require__(20);
+	
+	var _make2 = __webpack_require__(5);
+	
+	var ViewPortInstance = {
+	    _scope: null,
+	    _bound: false,
+	    _innerScope: null,
+	    _originalTemplate: null,
+	
+	    _make: function _make(scope) {
+	        this._scope = scope;
+	    },
+	
+	    bind: function bind(context) {
+	        if (!this._bound) {
+	            this._scope.templateUrl = context.template;
+	            this._scope.__apply__();
+	
+	            if (!this._originalTemplate) {
+	                this._originalTemplate = this._scope.element.firstElementChild;
+	            }
+	
+	            this._innerScope = _DataBinding.DataBinding.makeTemplate(this._originalTemplate, context.scope || {});
+	            this._bound = true;
+	
+	            context.scope = this._innerScope;
+	        } else {
+	            console.error('ViewPort: viewport is already bound!');
+	        }
+	
+	        return this;
+	    },
+	
+	    update: function update() {
+	        var _innerScope;
+	
+	        return (_innerScope = this._innerScope).__apply__.apply(_innerScope, arguments);
+	    },
+	
+	    get scope() {
+	        return this._innerScope;
+	    },
+	
+	    destory: function destory() {
+	        this._innerScope.__destroy__();
+	
+	        while (this._scope.element.children.length > 0) {
+	            this._scope.element.removeChild(this._scope.element.firstChild);
+	        }
+	
+	        this._scope.element.appendChild(this._originalTemplate);
+	        this._bound = false;
+	    }
+	};
+	
+	var ViewPort = {
+	
+	    _elements: {},
+	
+	    /** @type {Application} */
+	    _application: null,
+	
+	    /**
+	     * @constructs
+	     * @param {Application} application
+	     */
+	    _make: function _make(application) {
+	        var _this = this;
+	
+	        var style = document.head.appendChild(document.createElement('style'));
+	        var template = document.createElement('template');
+	
+	        style.innerHTML = '\n            .view-port {\n                position: absolute;\n                left: 0;\n                top: 0;\n                bottom: 0;\n                right: 0;\n                display: flex;\n                flex-direction: column;\n                overflow: auto;\n            }\n        ';
+	
+	        template.id = 'view-port';
+	        template.setAttribute('bind-element', '');
+	        template.setAttribute('component', '');
+	
+	        template.innerHTML = '\n            <div class="custom-element">\n                <template src="{{templateUrl}}" replace></template>\n            </div>\n        ';
+	
+	        application.on('newElement:view-port', function (scope) {
+	            _this._elements[scope.name] = (0, _make2.Make)(ViewPortInstance)(scope);
+	
+	            application.emit('viewPort:ready:' + scope.name);
+	        });
+	
+	        this._application = application;
+	
+	        _DataBinding.DataBinding.makeTemplate(template, function () {
+	            return {};
+	        }, application);
+	    },
+	
+	    getInstance: function getInstance(name) {
+	        var _this2 = this;
+	
+	        return new Promise(function (success) {
+	            if (_this2._elements[name]) {
+	                success(_this2._elements[name]);
+	            } else {
+	                _this2._application.on('viewPort:ready:' + name, function () {
+	                    return success(_this2._elements[name]);
+	                });
+	            }
+	        });
+	    }
+	};
+	
+	exports.default = ViewPort;
+
+/***/ },
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2637,7 +3427,7 @@
 	
 	var _App2 = _interopRequireDefault(_App);
 	
-	var _DataBinding = __webpack_require__(16);
+	var _DataBinding = __webpack_require__(20);
 	
 	var _make2 = __webpack_require__(5);
 	
@@ -2695,7 +3485,7 @@
 	exports.default = UiPage;
 
 /***/ },
-/* 29 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2704,13 +3494,13 @@
 	
 	var _App2 = _interopRequireDefault(_App);
 	
-	var _DataBinding = __webpack_require__(16);
+	var _DataBinding = __webpack_require__(20);
 	
-	var _Profile = __webpack_require__(30);
+	var _Profile = __webpack_require__(38);
 	
 	var _Profile2 = _interopRequireDefault(_Profile);
 	
-	var _UiPage = __webpack_require__(28);
+	var _UiPage = __webpack_require__(36);
 	
 	var _UiPage2 = _interopRequireDefault(_UiPage);
 	
@@ -2747,6 +3537,7 @@
 	
 	    var scope = _DataBinding$makeTemp.scope;
 	
+	
 	    _App2.default.on('ui-page:activated', function () {
 	        console.log(scope.profile);
 	        if (scope.profile) {
@@ -2762,7 +3553,7 @@
 	});
 
 /***/ },
-/* 30 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2773,7 +3564,7 @@
 	
 	var _make2 = __webpack_require__(5);
 	
-	var _Word = __webpack_require__(31);
+	var _Word = __webpack_require__(39);
 	
 	var _Word2 = _interopRequireDefault(_Word);
 	
@@ -2887,7 +3678,7 @@
 	exports.default = Profile;
 
 /***/ },
-/* 31 */
+/* 39 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2901,13 +3692,17 @@
 	    pronounciation: '',
 	    right: 0,
 	    tests: 0,
-	    priority: 0
+	    priority: 0,
+	
+	    get percent() {
+	        return Math.round(this.right / this.tests * 100);
+	    }
 	};
 	
 	exports.default = Word;
 
 /***/ },
-/* 32 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2916,19 +3711,19 @@
 	
 	var _App2 = _interopRequireDefault(_App);
 	
-	var _DataBinding = __webpack_require__(16);
+	var _DataBinding = __webpack_require__(20);
 	
 	var _make = __webpack_require__(5);
 	
-	var _Profile = __webpack_require__(30);
+	var _Profile = __webpack_require__(38);
 	
 	var _Profile2 = _interopRequireDefault(_Profile);
 	
-	var _UiPage = __webpack_require__(28);
+	var _UiPage = __webpack_require__(36);
 	
 	var _UiPage2 = _interopRequireDefault(_UiPage);
 	
-	var _Word = __webpack_require__(31);
+	var _Word = __webpack_require__(39);
 	
 	var _Word2 = _interopRequireDefault(_Word);
 	
@@ -2990,6 +3785,7 @@
 	
 	    var editorScope = _DataBinding$makeTemp2.scope;
 	
+	
 	    var setWordItem = function setWordItem() {
 	        if (editorScope.item && !editorScope.item.isNew) {
 	            _Profile2.default.save(editorScope.profile);
@@ -3026,7 +3822,7 @@
 	});
 
 /***/ },
-/* 33 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3035,19 +3831,19 @@
 	
 	var _App2 = _interopRequireDefault(_App);
 	
-	var _DataBinding = __webpack_require__(16);
+	var _DataBinding = __webpack_require__(20);
 	
 	var _make = __webpack_require__(5);
 	
-	var _Profile = __webpack_require__(30);
+	var _Profile = __webpack_require__(38);
 	
 	var _Profile2 = _interopRequireDefault(_Profile);
 	
-	var _TestUnit = __webpack_require__(34);
+	var _TestUnit = __webpack_require__(42);
 	
 	var _TestUnit2 = _interopRequireDefault(_TestUnit);
 	
-	var _UiPage = __webpack_require__(28);
+	var _UiPage = __webpack_require__(36);
 	
 	var _UiPage2 = _interopRequireDefault(_UiPage);
 	
@@ -3081,11 +3877,11 @@
 	    var finalize = function finalize() {
 	        scope.testUnitList.forEach(function (unit) {
 	            if (unit.status) {
-	                unit.word.right += 1;
-	                unit.word.priority += 1;
+	                unit.word.right = parseInt(unit.word.right) + 1;
+	                unit.word.priority = parseInt(unit.word.priority) + 1;
 	            }
 	
-	            unit.word.tests += 1;
+	            unit.word.tests = parseInt(unit.word.tests) + 1;
 	        });
 	
 	        var rightTests = 0;
@@ -3094,8 +3890,8 @@
 	        var totalWords = scope.profile.wordList.length;
 	
 	        scope.profile.wordList.forEach(function (word) {
-	            rightTests += word.right;
-	            totalTests += word.tests;
+	            rightTests += parseInt(word.right);
+	            totalTests += parseInt(word.tests);
 	
 	            if (word.tests === 0) {
 	                notTested += 1;
@@ -3173,6 +3969,7 @@
 	            }
 	        },
 	
+	
 	        noStatus: function noStatus() {
 	            return !!(this.testUnit && this.testUnit.status === null);
 	        },
@@ -3232,6 +4029,7 @@
 	
 	    var scope = _DataBinding$makeTemp.scope;
 	
+	
 	    _App2.default.on('ui-page:word-trainer:activated', function () {
 	        var wordList = shuffleArray(scope.profile.wordList.slice()).sort(function (a, b) {
 	            return a.priority > b.priority;
@@ -3256,7 +4054,7 @@
 	});
 
 /***/ },
-/* 34 */
+/* 42 */
 /***/ function(module, exports) {
 
 	'use strict';

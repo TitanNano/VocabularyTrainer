@@ -163,6 +163,16 @@ paper-button[raised][primary] {
     border-right: .1rem solid #ededed;
 }
 
+.progress-bg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background-color: rgba(0, 201, 0, 0.08);
+    pointer-events: none;
+}
+
 @media (max-width: 1115px) {
     .style-sm-width-60 {
         width: 60%;
