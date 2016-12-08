@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="icons/256.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="theme-color" content="#cddc39" />
+
     <title>Vocabulary Trainer</title>
 
-    <script src="components/webcomponentsjs/webcomponents-lite.min.js"></script>
-
     <link rel="import" href="components/paper-spinner/paper-spinner.html">
+    <link rel="import" href="stylesheets/custom-styles.html">
     <link rel="import-async" href="components/paper-header-panel/paper-header-panel.html">
     <link rel="import-async" href="components/paper-progress/paper-progress.html">
     <link rel="import-async" href="components/paper-button/paper-button.html">
@@ -17,9 +20,12 @@
     <link rel="import-async" href="components/paper-item/all-imports.html">
     <link rel="import-async" href="components/iron-icons/iron-icons.html">
     <link rel="import-async" href="components/paper-tooltip/paper-tooltip.html">
+    <link rel="import-async" href="components/paper-toolbar/paper-toolbar.html">
 
     <link rel="stylesheet" href="stylesheets/flex-layout.css">
     <link rel="stylesheet" href="stylesheets/main.css">
+
+    <style is="custom-style" include="styles"></style>
 </head>
 <body class="fullbleed layout vertical">
 
@@ -27,13 +33,16 @@
 
     <ui-page scope-side="left" scope-name="main-view" scope-active="true">
         <template id="main-view" replace>
-            <paper-header-panel class="flex" mode="waterfall">
-                <div class="paper-header style-primary style-header-title">Vocabulary Trainer</div>
+            <paper-header-panel class="flex" mode="standard">
+                <paper-toolbar class="style-primary">
+                    <div class="title">Vocabulary Trainer</div>
+                </paper-toolbar>
+
                 <div class="content style-padding" layout align-items="center">
                     <div flex="66" flex-sm flex-xs>
                         <h2 class="style-text-center">Your Progress:</h2>
                         <div layout>
-                            <paper-progress id="progress" class="style-profile-progress" flex value="50" bind-value="{{profile.progress}}"></paper-progress>
+                            <paper-progress id="progress" class="style-profile-progress" flex layout value="50" bind-value="{{profile.progress}}"></paper-progress>
                             <paper-tooltip for="progress">{{profile.progress}}%</paper-tooltip>
                             <paper-icon-button id="reset" class="style-warn" bind-events="{click:reset}" icon="restore"></paper-icon-button>
                             <paper-tooltip for="reset">Reset Progress</paper-tooltip>
@@ -62,11 +71,12 @@
 
     <ui-page scope-side="right" layout scope-name="word-manager">
         <template id="word-manager" replace>
-            <paper-header-panel flex="33" flex-xs mode="waterfall" bind-class="{ style-xs-hide: hideList() }">
-                <div class="paper-header style-primary">
+            <paper-header-panel flex="33" flex-xs mode="standard" bind-class="{ style-xs-hide: hideList() }">
+                <paper-toolbar class="style-primary">
                     <paper-icon-button bind-events="{click:backToMain}" icon="icons:chevron-left"></paper-icon-button>
-                    <span class="style-header-title">Word List</span>
-                </div>
+                    <div class="title">Word List</div>
+                </paper-toolbar>
+
                 <div class="content wordList-md wordList">
                     <paper-listbox bind-model="selection" bind-model-event="iron-activate:selected:detail.selected" bind-events="{iron-select:selectionChanged}">
                         <template replace repeat="item in profile.wordList" bind-polymer-parent="paper-listbox">
@@ -95,11 +105,12 @@
             </paper-header-panel>
         </template>
         <template id="word-editor" replace>
-            <paper-header-panel flex mode="waterfall" bind-class="{ style-xs-hide: hideEditor() }">
-                <div class="paper-header style-primary">
+            <paper-header-panel flex mode="standard" bind-class="{ style-xs-hide: hideEditor() }">
+                <paper-toolbar class="style-primary">
                     <paper-icon-button class="style-xs-show" bind-events="{click:closeEditor}" icon="icons:chevron-left"></paper-icon-button>
-                    <span class="style-header-title">Word Editor</span>
-                </div>
+                    <div class="title">Word Editor</div>
+                </paper-toolbar>
+
                 <div layout align-items="center center" class="content">
                     <div flex="50" bind-display="hasItem()">
                         <paper-input type="text" label="{{profile.targetLang}}" bind-value="{{item.text}}"></paper-input>
@@ -116,12 +127,13 @@
 
     <ui-page layout scope-name="word-trainer" scope-side="right">
         <template id="word-trainer" replace>
-            <paper-header-panel flex mode="waterfall">
-                <div class="paper-header style-primary">
+            <paper-header-panel flex mode="standard">
+                <paper-toolbar class="style-primary">
                     <paper-icon-button icon="icons:chevron-left" bind-events="{click:back}"></paper-icon-button>
-                    <span class="style-header-title">Practice Words</span>
-                </div>
-                <div layout align-items="center center" class="content style-full-content">
+                    <div class="title">Practice Words</div>
+                </paper-toolbar>
+
+                <div layout align-items="center center" class="content fit style-full-content">
                     <div flex="none" bind-display="noLanguage()">
                         <h2 class="style-text-center">Answer in:</h2>
                         <div>
@@ -157,8 +169,8 @@
         </div>
     </template>
 
+    <script src="https://cdn.rawgit.com/GoogleChrome/pwacompat/v1.0.0/pwacompat.min.js"></script>
+    <script src="components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <script src="app.js"></script>
-<!--    <script src="components/systemjs/system.js"></script> -->
-<!--    <script src="scripts/loader.js" async></script> -->
 </body>
 </html>

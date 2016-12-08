@@ -1,0 +1,20 @@
+{
+    "name": "Vocabulary Trainer",
+    "short_name": "VocTrainer",
+    "theme_color": "#cddc39",
+    "start_url": "./",
+    "orientation": "natural",
+    "scope": "./",
+    "lang": "en-US",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "icons": [{
+        "src": "icons/256.png",
+        "sizes": "144x144",
+        "type": "image/png"
+    },{
+        "src": "icons/256.png",
+        "sizes": "256x256",
+        "type": "image/png"
+    }]
+}
