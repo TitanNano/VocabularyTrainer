@@ -5,5 +5,16 @@
   ],
   "loadEagerly": [
     "src/**/*.js"
-  ]
+  ],
+  "plugins": {
+    "lint": {},
+    "doc_comment": {
+      "fullDocs": true,
+      "strong": true
+    },
+    "modules": {
+      "load": true
+    },
+    "es_modules": {}
+  }
 }
