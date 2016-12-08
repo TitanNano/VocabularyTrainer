@@ -7,7 +7,10 @@ let Word = {
     priority : 0,
 
     get percent() {
-        return Math.round(this.right / this.tests * 100);
+        let right = this.right || 0;
+        let tests = (this.tests && this.tests > 0) ? this.tests : 1;
+
+        return Math.round(right / tests * 100);
     }
 }
 
